@@ -11,15 +11,15 @@ import (
 
 func ConnectDB() (*gorm.DB, error) {
 	// First connect to default postgres database
-	dsn := fmt.Sprintf(
-		"postgres://%s:%s@%s:%s/postgres",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-	)
+	// dsn := fmt.Sprintf(
+	// 	"postgres://%s:%s@%s:%s/postgres",
+	// 	os.Getenv("DB_USER"),
+	// 	os.Getenv("DB_PASSWORD"),
+	// 	os.Getenv("DB_HOST"),
+	// 	os.Getenv("DB_PORT"),
+	// )
 	defaultDB, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  dsn,
+		DSN:                  os.Getenv("DATABASE_URL"),
 		PreferSimpleProtocol: true,
 	}))
 	if err != nil {

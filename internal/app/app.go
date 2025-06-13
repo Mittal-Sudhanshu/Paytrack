@@ -21,9 +21,8 @@ type App struct {
 }
 
 func InitializeApp() (*App, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading .env file: %v", err)
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, skipping...")
 	}
 
 	// Create Fiber app with custom configuration
