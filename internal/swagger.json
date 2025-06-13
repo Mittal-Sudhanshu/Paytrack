@@ -1,0 +1,254 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "PayTrack API",
+    "version": "1.0.0",
+    "description": "API documentation for PayTrack"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Organizations",
+      "description": "Organization management"
+    },
+    {
+      "name": "Users",
+      "description": "User authentication and management"
+    },
+    {
+      "name": "Invites",
+      "description": "Invitation handling"
+    }
+  ],
+  "paths": {
+    "/orgs/createOrg": {
+      "post": {
+        "tags": ["Organizations"],
+        "summary": "Create an organization",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrgRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organization created"
+          }
+        }
+      }
+    },
+    "/orgs/{orgId}/inviteEmployee": {
+      "post": {
+        "tags": ["Organizations"],
+        "summary": "Invite an employee",
+        "parameters": [
+          {
+            "name": "orgId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteEmployeeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Employee invited"
+          }
+        }
+      }
+    },
+    "/invites/accept": {
+      "post": {
+        "tags": ["Invites"],
+        "summary": "Accept an invite",
+        "description": "Accept an invitation using the invite token and set a password.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInviteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Invite accepted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": { "type": "string" },
+                    "data": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users/signup": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Sign up a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User signed up successfully"
+          },
+          "400": { "description": "Invalid request" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Login a user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User logged in successfully"
+          },
+          "400": { "description": "Invalid request" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "List of users"
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CreateOrgRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "industry": { "type": "string" },
+          "address": { "type": "string" },
+          "country": { "type": "string" },
+          "city": { "type": "string" },
+          "website": { "type": "string" },
+          "contact_email": { "type": "string" },
+          "contact_phone": { "type": "string" }
+        },
+        "required": ["name", "industry", "address", "country", "city", "contact_email", "contact_phone"]
+      },
+      "InviteEmployeeRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "role": { "type": "string" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "message": { "type": "string" },
+          "base_salary": { "type": "number" },
+          "department": { "type": "string" },
+          "bonus": { "type": "number" },
+          "joining_date": { "type": "string", "format": "date-time" },
+          "employment_type": { "type": "string" },
+          "overtime_rate": { "type": "number" },
+          "allowances": { "type": "number" },
+          "health_insurance": { "type": "number" },
+          "retirement_benefits": { "type": "number" },
+          "stock_options": { "type": "number" },
+          "stock_options_vested": { "type": "number" },
+          "stock_options_unvested": { "type": "number" },
+          "stock_options_expiration": { "type": "string", "format": "date-time" },
+          "stock_options_grant_date": { "type": "string", "format": "date-time" },
+          "stock_options_strike_price": { "type": "number" },
+          "stock_options_quantity": { "type": "integer" },
+          "stock_options_type": { "type": "string" },
+          "stock_options_status": { "type": "string" },
+          "designation": { "type": "string" },
+          "reporting_to_id": { "type": "string", "nullable": true },
+          "phone_number": { "type": "string" }
+        },
+        "required": [
+          "email", "role", "first_name", "last_name", "base_salary", "department",
+          "joining_date", "employment_type", "phone_number"
+        ]
+      },
+      "AcceptInviteRequest": {
+        "type": "object",
+        "properties": {
+          "invite_token": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["invite_token", "password"]
+      },
+      "SignupRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "password": { "type": "string" },
+          "role_id": { "type": "string" },
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "phone_number": { "type": "string" }
+        },
+        "required": ["email", "password"]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["email", "password"]
+      }
+    }
+  }
+}
