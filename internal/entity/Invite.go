@@ -7,8 +7,8 @@ type Invite struct {
 	Email                   string       `gorm:"unique;not null"`
 	RoleId                  string       `gorm:"not null"`
 	Role                    Role         `gorm:"foreignKey:RoleId"`
-	FirstName               string       `gorm:"not null;default:''"`
-	LastName                string       `gorm:"not null;default:''"`
+	FirstName               string       `gorm:"not null;default:' '"`
+	LastName                string       `gorm:"not null;default:' '"`
 	InvitedById             string       `gorm:"not null"`
 	InvitedBy               User         `gorm:"foreignKey:InvitedById"`
 	OrganizationId          string       `gorm:"not null"`

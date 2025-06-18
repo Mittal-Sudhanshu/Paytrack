@@ -13,15 +13,17 @@ import (
 type OrgService interface {
 	CreateOrg(ctx context.Context, req model.CreateOrgRequest) (any, error)
 	InviteEmployee(ctx context.Context, req model.InviteEmployeeRequest, orgId string, loggedInUserId string) (any, error)
+	GetMyOrgs(ctx context.Context, userId string) (any, error)
 }
 
 type orgService struct {
-	orgRepo    repository.Repository[entity.Organization]
-	inviteRepo repository.Repository[entity.Invite]
+	orgRepo     repository.Repository[entity.Organization]
+	userOrgRepo repository.Repository[entity.UserOrg]
+	inviteRepo  repository.Repository[entity.Invite]
 }
 
-func NewOrgService(orgRepo repository.Repository[entity.Organization], inviteRepo repository.Repository[entity.Invite]) OrgService {
-	return &orgService{orgRepo: orgRepo, inviteRepo: inviteRepo}
+func NewOrgService(orgRepo repository.Repository[entity.Organization], inviteRepo repository.Repository[entity.Invite], userOrgRepo repository.Repository[entity.UserOrg]) OrgService {
+	return &orgService{orgRepo: orgRepo, inviteRepo: inviteRepo, userOrgRepo: userOrgRepo}
 }
 
 func (s *orgService) CreateOrg(ctx context.Context, req model.CreateOrgRequest) (any, error) {
@@ -89,4 +91,12 @@ func (s *orgService) InviteEmployee(ctx context.Context, req model.InviteEmploye
 	}
 
 	return invitedEmployee, nil
+}
+
+func (s *orgService) GetMyOrgs(ctx context.Context, userId string) (any, error) {
+	orgs, err := s.userOrgRepo.Query(ctx, map[string]interface{}{"user_id": userId})
+	if err != nil {
+		return nil, err
+	}
+	return orgs, nil
 }

@@ -13,6 +13,7 @@ import (
 type leaveService struct {
 	leaveRequestRepo repository.Repository[entity.LeaveRequest]
 	leaveBalanceRepo repository.Repository[entity.LeaveBalance]
+	employeeRepo     repository.Repository[entity.Employee]
 }
 
 type LeaveService interface {
@@ -21,12 +22,14 @@ type LeaveService interface {
 	// GetLeaveHistory(context context.Context, userId string) ([]entity.LeaveRequest, error)
 	GetLeaveRequests(context context.Context, userId string) ([]entity.LeaveRequest, error)
 	UpdateLeaveRequest(context context.Context, requestId string, userId string, status string) (any, error)
+	GenerateLeaveBalance(ctx context.Context) (any, error)
 }
 
-func NewLeaveService(leaveRequestRepo repository.Repository[entity.LeaveRequest], leaveBalanceRepo repository.Repository[entity.LeaveBalance]) LeaveService {
+func NewLeaveService(leaveRequestRepo repository.Repository[entity.LeaveRequest], leaveBalanceRepo repository.Repository[entity.LeaveBalance], employeeRepo repository.Repository[entity.Employee]) LeaveService {
 	return &leaveService{
 		leaveRequestRepo: leaveRequestRepo,
 		leaveBalanceRepo: leaveBalanceRepo,
+		employeeRepo:     employeeRepo,
 	}
 }
 
@@ -131,4 +134,50 @@ func (s *leaveService) UpdateLeaveRequest(context context.Context, requestId str
 		return nil, err
 	}
 	return "Leave Approved", nil
+}
+
+func (s *leaveService) GenerateLeaveBalance(ctx context.Context) (any, error) {
+	now := time.Now()
+	month := int(now.Month())
+	year := now.Year()
+
+	// 1. Fetch all active employees
+	employees, err := s.employeeRepo.Query(ctx, map[string]interface{}{
+		"is_active": false,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch employees: %w", err)
+	}
+
+	// 2. For each employee, check if balance already exists for the month
+	for _, e := range employees {
+		existing, err := s.leaveBalanceRepo.Query(ctx, map[string]interface{}{
+			"employee_id": e.ID,
+			"month":       int(month),
+			"year":        year,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error querying leave balance: %w", err)
+		}
+		if len(existing) > 0 {
+			continue // Skip if already generated
+		}
+
+		// 3. Create new leave balance (customize totals as needed)
+		leaveBalance := entity.LeaveBalance{
+			EmployeeId:  e.ID,
+			Month:       month,
+			Year:        year,
+			TotalPaid:   2, // Monthly entitlement, example value
+			TotalUnpaid: 10,
+			RemPaid:     2,
+			RemUnpaid:   10,
+		}
+
+		if _, err := s.leaveBalanceRepo.Create(ctx, &leaveBalance); err != nil {
+			return nil, fmt.Errorf("failed to create leave balance for %s: %w", e.ID, err)
+		}
+	}
+
+	return "Success", nil
 }

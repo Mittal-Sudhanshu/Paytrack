@@ -13,10 +13,12 @@ import (
 func SetupOrgRoutes(router fiber.Router, app *app.App) {
 	orgRoutes := router.Group("/orgs", middleware.AuthMiddleware())
 	orgRepo := repository.NewRepository[entity.Organization](app.DB)
+	userOrgRepo := repository.NewRepository[entity.UserOrg](app.DB)
 	inviteRepo := repository.NewRepository[entity.Invite](app.DB)
-	service := service.NewOrgService(*orgRepo, *inviteRepo)
+	service := service.NewOrgService(*orgRepo, *inviteRepo, *userOrgRepo)
 	handler := handler.NewOrgHandler(service)
 
 	orgRoutes.Post("/createOrg", handler.CreateOrg)
 	orgRoutes.Post("/:orgId/inviteEmployee", handler.InviteEmployee)
+	orgRoutes.Get("/myOrgs", handler.GetMyOrgs)
 }

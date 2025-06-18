@@ -18,7 +18,7 @@ func (r *Repository[T]) Create(ctx context.Context, entity *T) (*T, error) {
 	return entity, err
 }
 
-func (r *Repository[T]) GetByID(ctx context.Context, id any) (*T, error) {
+func (r *Repository[T]) GetByID(ctx context.Context, id string) (*T, error) {
 	var entity T
 	err := r.DB.WithContext(ctx).First(&entity, id).Error
 	return &entity, err

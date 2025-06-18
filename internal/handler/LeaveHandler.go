@@ -82,3 +82,18 @@ func (h *LeaveHandler) UpdateLeaveRequest(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Leave request approved successfully"})
 }
+
+func (h *LeaveHandler) GenerateLeaveBalance(c *fiber.Ctx) error {
+	result, err := h.leaveService.GenerateLeaveBalance(c.Context())
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error":   true,
+			"message": err.Error(),
+		})
+	}
+	return c.JSON(fiber.Map{
+		"error":   false,
+		"message": "Leave balances generated successfully",
+		"data":    result,
+	})
+}

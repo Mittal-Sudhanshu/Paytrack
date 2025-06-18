@@ -11,4 +11,5 @@ func SetupRoutes(app *app.App) {
 	SetupInviteRoutes(router, app)
 	SetupClockRoutes(router, app)
 	SetupLeaveRoutes(router, app)
+	SetupPayrollRoutes(router, app)
 }

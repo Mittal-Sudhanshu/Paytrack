@@ -22,7 +22,7 @@ func SetupInviteRoutes(router fiber.Router, app *app.App) {
 	inviteService := service.NewInviteService(*inviteRepo, *userRepo, *employeeRepo, *userOrgRepo, userServiceImpl)
 	inviteHandler := handler.NewInviteHandler(inviteService)
 
-	inviteRoutes.Post("/create", inviteHandler.AcceptInvite)
+	inviteRoutes.Post("/accept", inviteHandler.AcceptInvite)
 	// inviteRoutes.Get("/:inviteId", inviteHandler.GetInvite)
 	// inviteRoutes.Delete("/:inviteId", inviteHandler.DeleteInvite)
 

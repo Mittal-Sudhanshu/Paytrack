@@ -15,6 +15,8 @@ import (
 type UserService interface {
 	ListUsers(ctx context.Context) (any, error)
 	SignupUser(ctx context.Context, req model.SignupRequest) (any, error)
+	SignupUserReturnUser(ctx context.Context, req model.SignupRequest) (any, error)
+
 	Login(ctx context.Context, req model.LoginRequest) (any, error)
 }
 
@@ -57,6 +59,34 @@ func (s *userService) SignupUser(ctx context.Context, req model.SignupRequest) (
 		return nil, errors.New("error generating jwt")
 	}
 	return jwt, nil
+}
+func (s *userService) SignupUserReturnUser(ctx context.Context, req model.SignupRequest) (any, error) {
+	if req.Email == "" || req.Password == "" {
+		return nil, errors.New("email and password are required")
+	}
+
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, errors.New("failed to hash password")
+	}
+
+	user := entity.User{
+		Email:         req.Email,
+		Password_hash: string(hashedPassword),
+		RoleId:        req.RoleId,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		PhoneNumnber:  req.PhoneNumber,
+		LastLogin:     time.Now(),
+		// LastLogin can be set to zero value or time.Now() if needed
+	}
+
+	createdUser, err := s.userRepo.Create(ctx, &user)
+	if err != nil {
+		return nil, err
+	}
+	return createdUser, nil
 }
 func (s *userService) Login(ctx context.Context, req model.LoginRequest) (any, error) {
 	if req.Email == "" || req.Password == "" {

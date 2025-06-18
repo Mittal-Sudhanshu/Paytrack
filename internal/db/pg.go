@@ -10,6 +10,7 @@ import (
 )
 
 func ConnectDB() (*gorm.DB, error) {
+	// if(os.Getenv())
 	// First connect to default postgres database
 	// dsn := fmt.Sprintf(
 	// 	"postgres://%s:%s@%s:%s/postgres",
@@ -18,33 +19,33 @@ func ConnectDB() (*gorm.DB, error) {
 	// 	os.Getenv("DB_HOST"),
 	// 	os.Getenv("DB_PORT"),
 	// )
-	defaultDB, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  os.Getenv("DATABASE_URL"),
-		PreferSimpleProtocol: true,
-	}))
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to default database: %v", err)
-	}
+	// defaultDB, err := gorm.Open(postgres.New(postgres.Config{
+	// 	DSN:                  os.Getenv("DATABASE_URL"),
+	// 	PreferSimpleProtocol: true,
+	// }))
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to connect to default database: %v", err)
+	// }
 
-	// Check if our target database exists
-	dbName := os.Getenv("DB_NAME")
-	var count int64
-	defaultDB.Raw("SELECT count(*) FROM pg_database WHERE datname = ?", dbName).Count(&count)
+	// // Check if our target database exists
+	// dbName := os.Getenv("DB_NAME")
+	// var count int64
+	// defaultDB.Raw("SELECT count(*) FROM pg_database WHERE datname = ?", dbName).Count(&count)
 
-	// Create database if it doesn't exist
-	if count == 0 {
-		createDB := fmt.Sprintf("CREATE DATABASE %s", dbName)
-		if err := defaultDB.Exec(createDB).Error; err != nil {
-			return nil, fmt.Errorf("failed to create database: %v", err)
-		}
-	}
+	// // Create database if it doesn't exist
+	// if count == 0 {
+	// 	createDB := fmt.Sprintf("CREATE DATABASE %s", dbName)
+	// 	if err := defaultDB.Exec(createDB).Error; err != nil {
+	// 		return nil, fmt.Errorf("failed to create database: %v", err)
+	// 	}
+	// }
 
-	// Close the default database connection
-	sqlDB, err := defaultDB.DB()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get database instance: %v", err)
-	}
-	sqlDB.Close()
+	// // Close the default database connection
+	// sqlDB, err := defaultDB.DB()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to get database instance: %v", err)
+	// }
+	// sqlDB.Close()
 
 	// Connect to our target database
 	db, err := gorm.Open(postgres.New(postgres.Config{

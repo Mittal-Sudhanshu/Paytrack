@@ -1,12 +1,10 @@
 package entity
 
-import "time"
-
 type LeaveBalance struct {
 	BaseModel
 	EmployeeId  string
 	Employee    Employee `gorm:"foreignKey:EmployeeId"`
-	Month       time.Month
+	Month       int      `gorm:"type:integer"` // ✅ Changed from time.Month to int
 	Year        int
 	TotalPaid   int
 	TotalUnpaid int

@@ -49,14 +49,14 @@ func (s *inviteService) AcceptInvite(ctx context.Context, acceptInviteRequest mo
 		return nil, err
 	}
 
-	userAny, err := s.userService.SignupUser(ctx, model.SignupRequest{
+	userAny, err := s.userService.SignupUserReturnUser(ctx, model.SignupRequest{
 		Email:       invite[len(invite)-1].Email,
 		RoleId:      invite[len(invite)-1].RoleId,
 		FirstName:   invite[len(invite)-1].FirstName,
 		LastName:    invite[len(invite)-1].LastName,
 		Password:    acceptInviteRequest.Password,
 		PhoneNumber: invite[len(invite)-1].PhoneNumber,
-	})
+	},)
 	if err != nil {
 		return nil, err
 	}

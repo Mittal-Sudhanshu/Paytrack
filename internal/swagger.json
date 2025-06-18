@@ -2,34 +2,102 @@
   "openapi": "3.0.0",
   "info": {
     "title": "PayTrack API",
-    "version": "1.0.0",
-    "description": "API documentation for PayTrack"
+    "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:3000",
-      "description": "Local server"
-    }
-  ],
   "tags": [
     {
-      "name": "Organizations",
-      "description": "Organization management"
+      "name": "User",
+      "description": "User related endpoints"
     },
     {
-      "name": "Users",
-      "description": "User authentication and management"
+      "name": "Org",
+      "description": "Organization related endpoints"
     },
     {
-      "name": "Invites",
-      "description": "Invitation handling"
+      "name": "Leave",
+      "description": "Leave management endpoints"
+    },
+    {
+      "name": "Invite",
+      "description": "Invitation endpoints"
+    },
+    {
+      "name": "Clock",
+      "description": "Clock in/out endpoints"
     }
   ],
   "paths": {
-    "/orgs/createOrg": {
+    "/users/signup": {
       "post": {
-        "tags": ["Organizations"],
-        "summary": "Create an organization",
+        "tags": [
+          "User"
+        ],
+        "summary": "Sign up a new user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Login user",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "List of users"
+          }
+        }
+      }
+    },
+    "/orgs": {
+      "post": {
+        "tags": [
+          "Org"
+        ],
+        "summary": "Create organization",
         "requestBody": {
           "required": true,
           "content": {
@@ -43,20 +111,27 @@
         "responses": {
           "201": {
             "description": "Organization created"
+          },
+          "400": {
+            "description": "Invalid request"
           }
         }
       }
     },
-    "/orgs/{orgId}/inviteEmployee": {
+    "/orgs/{orgId}/invite": {
       "post": {
-        "tags": ["Organizations"],
-        "summary": "Invite an employee",
+        "tags": [
+          "Org"
+        ],
+        "summary": "Invite employee to organization",
         "parameters": [
           {
             "name": "orgId",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -72,15 +147,112 @@
         "responses": {
           "201": {
             "description": "Employee invited"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/leaves/apply": {
+      "post": {
+        "tags": [
+          "Leave"
+        ],
+        "summary": "Apply for leave",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeaveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leave applied"
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/leaves/balance": {
+      "get": {
+        "tags": [
+          "Leave"
+        ],
+        "summary": "Get leave balance",
+        "responses": {
+          "200": {
+            "description": "Leave balance"
+          }
+        }
+      }
+    },
+    "/leaves/requests": {
+      "get": {
+        "tags": [
+          "Leave"
+        ],
+        "summary": "Get leave requests",
+        "responses": {
+          "200": {
+            "description": "List of leave requests"
+          }
+        }
+      }
+    },
+    "/leaves/requests/{requestId}": {
+      "put": {
+        "tags": [
+          "Leave"
+        ],
+        "summary": "Update leave request status",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leave request updated"
+          },
+          "400": {
+            "description": "Invalid request"
           }
         }
       }
     },
     "/invites/accept": {
       "post": {
-        "tags": ["Invites"],
-        "summary": "Accept an invite",
-        "description": "Accept an invitation using the invite token and set a password.",
+        "tags": [
+          "Invite"
+        ],
+        "summary": "Accept invite",
         "requestBody": {
           "required": true,
           "content": {
@@ -93,161 +265,344 @@
         },
         "responses": {
           "200": {
-            "description": "Invite accepted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "data": { "type": "string" }
-                  }
-                }
-              }
-            }
+            "description": "Invite accepted"
           },
-          "400": { "description": "Invalid request" },
-          "500": { "description": "Server error" }
-        }
-      }
-    },
-    "/users/signup": {
-      "post": {
-        "tags": ["Users"],
-        "summary": "Sign up a new user",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SignupRequest"
-              }
-            }
+          "400": {
+            "description": "Invalid request"
           }
-        },
-        "responses": {
-          "201": {
-            "description": "User signed up successfully"
-          },
-          "400": { "description": "Invalid request" },
-          "500": { "description": "Server error" }
         }
       }
     },
-    "/users/login": {
+    "/clock/in": {
       "post": {
-        "tags": ["Users"],
-        "summary": "Login a user",
+        "tags": [
+          "Clock"
+        ],
+        "summary": "Clock in",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/ClockInRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "User logged in successfully"
+            "description": "Clocked in"
           },
-          "400": { "description": "Invalid request" },
-          "500": { "description": "Server error" }
+          "400": {
+            "description": "Invalid request"
+          }
         }
       }
     },
-    "/users": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get all users",
+    "/clock/out": {
+      "post": {
+        "tags": [
+          "Clock"
+        ],
+        "summary": "Clock out",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClockOutRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "List of users"
+            "description": "Clocked out"
           },
-          "500": { "description": "Server error" }
+          "400": {
+            "description": "Invalid request"
+          }
         }
       }
     }
   },
   "components": {
     "schemas": {
+      "SignupRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "roleId": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "roleId"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
       "CreateOrgRequest": {
         "type": "object",
         "properties": {
-          "name": { "type": "string" },
-          "industry": { "type": "string" },
-          "address": { "type": "string" },
-          "country": { "type": "string" },
-          "city": { "type": "string" },
-          "website": { "type": "string" },
-          "contact_email": { "type": "string" },
-          "contact_phone": { "type": "string" }
+          "name": {
+            "type": "string"
+          },
+          "industry": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "contact_email": {
+            "type": "string"
+          },
+          "contact_phone": {
+            "type": "string"
+          }
         },
-        "required": ["name", "industry", "address", "country", "city", "contact_email", "contact_phone"]
+        "required": [
+          "name",
+          "industry",
+          "address",
+          "country",
+          "city",
+          "contact_email",
+          "contact_phone"
+        ]
       },
       "InviteEmployeeRequest": {
         "type": "object",
         "properties": {
-          "email": { "type": "string" },
-          "role": { "type": "string" },
-          "first_name": { "type": "string" },
-          "last_name": { "type": "string" },
-          "message": { "type": "string" },
-          "base_salary": { "type": "number" },
-          "department": { "type": "string" },
-          "bonus": { "type": "number" },
-          "joining_date": { "type": "string", "format": "date-time" },
-          "employment_type": { "type": "string" },
-          "overtime_rate": { "type": "number" },
-          "allowances": { "type": "number" },
-          "health_insurance": { "type": "number" },
-          "retirement_benefits": { "type": "number" },
-          "stock_options": { "type": "number" },
-          "stock_options_vested": { "type": "number" },
-          "stock_options_unvested": { "type": "number" },
-          "stock_options_expiration": { "type": "string", "format": "date-time" },
-          "stock_options_grant_date": { "type": "string", "format": "date-time" },
-          "stock_options_strike_price": { "type": "number" },
-          "stock_options_quantity": { "type": "integer" },
-          "stock_options_type": { "type": "string" },
-          "stock_options_status": { "type": "string" },
-          "designation": { "type": "string" },
-          "reporting_to_id": { "type": "string", "nullable": true },
-          "phone_number": { "type": "string" }
+          "email": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "base_salary": {
+            "type": "number"
+          },
+          "department": {
+            "type": "string"
+          },
+          "bonus": {
+            "type": "number"
+          },
+          "joining_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "employment_type": {
+            "type": "string"
+          },
+          "overtime_rate": {
+            "type": "number"
+          },
+          "allowances": {
+            "type": "number"
+          },
+          "health_insurance": {
+            "type": "number"
+          },
+          "retirement_benefits": {
+            "type": "number"
+          },
+          "stock_options": {
+            "type": "number"
+          },
+          "stock_options_vested": {
+            "type": "number"
+          },
+          "stock_options_unvested": {
+            "type": "number"
+          },
+          "stock_options_expiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stock_options_grant_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "stock_options_strike_price": {
+            "type": "number"
+          },
+          "stock_options_quantity": {
+            "type": "integer"
+          },
+          "stock_options_type": {
+            "type": "string"
+          },
+          "stock_options_status": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string"
+          },
+          "reporting_to_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone_number": {
+            "type": "string"
+          }
         },
         "required": [
-          "email", "role", "first_name", "last_name", "base_salary", "department",
-          "joining_date", "employment_type", "phone_number"
+          "email",
+          "role",
+          "first_name",
+          "last_name",
+          "base_salary",
+          "department",
+          "joining_date",
+          "employment_type",
+          "designation",
+          "phone_number"
+        ]
+      },
+      "LeaveRequest": {
+        "type": "object",
+        "properties": {
+          "leaveType": {
+            "type": "integer"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "leaveType",
+          "startDate",
+          "endDate",
+          "reason"
         ]
       },
       "AcceptInviteRequest": {
         "type": "object",
         "properties": {
-          "invite_token": { "type": "string" },
-          "password": { "type": "string" }
+          "password": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "inviteToken": {
+            "type": "string"
+          }
         },
-        "required": ["invite_token", "password"]
+        "required": [
+          "password",
+          "email",
+          "firstName",
+          "lastName",
+          "phoneNumber",
+          "inviteToken"
+        ]
       },
-      "SignupRequest": {
+      "ClockInRequest": {
         "type": "object",
         "properties": {
-          "email": { "type": "string" },
-          "password": { "type": "string" },
-          "role_id": { "type": "string" },
-          "first_name": { "type": "string" },
-          "last_name": { "type": "string" },
-          "phone_number": { "type": "string" }
+          "clockInTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "latitude": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "string"
+          }
         },
-        "required": ["email", "password"]
+        "required": [
+          "clockInTime",
+          "latitude",
+          "longitude"
+        ]
       },
-      "LoginRequest": {
+      "ClockOutRequest": {
         "type": "object",
         "properties": {
-          "email": { "type": "string" },
-          "password": { "type": "string" }
+          "clockOutTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "latitude": {
+            "type": "string"
+          },
+          "longitude": {
+            "type": "string"
+          }
         },
-        "required": ["email", "password"]
+        "required": [
+          "clockOutTime",
+          "latitude",
+          "longitude"
+        ]
       }
     }
   }

@@ -48,3 +48,14 @@ func (h *OrgHandler) InviteEmployee(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"status": "success", "data": data})
 }
+func (h *OrgHandler) GetMyOrgs(c *fiber.Ctx) error {
+	userId := c.Locals("user_id").(string)
+	if userId == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "user_id is required")
+	}
+	data, err := h.orgService.GetMyOrgs(c.Context(), userId)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"status": "success", "data": data})
+}

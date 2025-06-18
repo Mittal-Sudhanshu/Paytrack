@@ -11,6 +11,7 @@ const (
 
 type Payroll struct {
 	BaseModel
+	Month         time.Time
 	EmployeeId    string
 	Employee      Employee `gorm:"foreignKey:EmployeeId"`
 	BaseSalary    float64
