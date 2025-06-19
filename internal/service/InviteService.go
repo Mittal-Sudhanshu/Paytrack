@@ -56,7 +56,7 @@ func (s *inviteService) AcceptInvite(ctx context.Context, acceptInviteRequest mo
 		LastName:    invite[len(invite)-1].LastName,
 		Password:    acceptInviteRequest.Password,
 		PhoneNumber: invite[len(invite)-1].PhoneNumber,
-	},)
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +66,7 @@ func (s *inviteService) AcceptInvite(ctx context.Context, acceptInviteRequest mo
 	}
 	//create employee
 	employee := entity.Employee{
+		// ID:                      user.ID,
 		UserID:                  user.ID,
 		OrganizationID:          invite[len(invite)-1].OrganizationId,
 		Department:              invite[len(invite)-1].Department,
@@ -84,6 +85,9 @@ func (s *inviteService) AcceptInvite(ctx context.Context, acceptInviteRequest mo
 		StockOptionsType:        invite[len(invite)-1].StockOptionsType,
 		StockOptionsStatus:      invite[len(invite)-1].StockOptionsStatus,
 		EmploymentType:          invite[len(invite)-1].EmploymentType,
+		BaseModel: entity.BaseModel{
+			ID: user.ID,
+		},
 	}
 	_, err = s.employeeRepository.Create(ctx, &employee)
 	if err != nil {
